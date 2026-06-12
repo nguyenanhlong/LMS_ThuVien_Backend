@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -19,8 +20,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $data['email'])->first();
         
-        // SỬA TẠI ĐÂY: So sánh trực tiếp chữ thuần, không dùng Hash::check nữa
-        if (!$user || $data['password'] !== $user->password) {
+        if (!$user || !Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Email hoặc mật khẩu không đúng'],
             ]);
@@ -57,15 +57,13 @@ class AuthController extends Controller
         $email = $data['email'] ?? $request->header('X-User-Email');
         $user = $email ? User::where('email', $email)->first() : null;
 
-        // SỬA TẠI ĐÂY: So sánh trực tiếp mật khẩu hiện tại bằng chữ thuần
-        if (!$user || $data['current'] !== $user->password) {
+        if (!$user || !Hash::check($data['current'], $user->password)) {
             throw ValidationException::withMessages([
                 'current' => ['Mật khẩu hiện tại không đúng'],
             ]);
         }
 
-        // SỬA TẠI ĐÂY: Lưu thẳng mật khẩu mới dạng chữ thuần vào DB, nhập gì lưu nấy
-        $user->password = $data['newPass'];
+        $user->password = Hash::make($data['newPass']);
         $user->save();
 
         if (method_exists($this, 'audit')) {
