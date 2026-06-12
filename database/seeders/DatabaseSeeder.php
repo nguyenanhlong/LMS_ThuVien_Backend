@@ -12,39 +12,45 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(UserSeeder::class);
+
         AuditLog::query()->delete();
         Loan::query()->delete();
         Reader::query()->delete();
         Book::query()->delete();
 
         Book::insert(
-            json_decode(
-                file_get_contents(database_path('data/books.json')),
-                true
-            )
+            $this->loadJsonData('data/books.json')
         );
 
         Reader::insert(
-            json_decode(
-                file_get_contents(database_path('data/readers.json')),
-                true
-            )
+            $this->loadJsonData('data/readers.json')
         );
 
         AuditLog::insert(
-            json_decode(
-                file_get_contents(database_path('data/audit_logs.json')),
-                true
-            )
+            $this->loadJsonData('data/audit_logs.json')
         );
 
-        $loans = json_decode(
-            file_get_contents(database_path('data/loans.json')),
-            true
-        );
+        $loans = $this->loadJsonData('data/loans.json');
 
         foreach ($loans as $loan) {
             Loan::create($loan);
         }
+    }
+
+    private function loadJsonData(string $path): array
+    {
+        $data = json_decode(
+            file_get_contents(database_path($path)),
+            true
+        );
+
+        foreach ($data as $item) {
+            if (isset($item['data']) && is_array($item['data'])) {
+                return $item['data'];
+            }
+        }
+
+        return $data;
     }
 }
