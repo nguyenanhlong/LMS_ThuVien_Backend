@@ -1,0 +1,13 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"lms_thuvien"},
+{"type":"table","name":"readers","database":"lms_thuvien","data":
+[
+{"id":"RD-2668","name":"Bùi Ngọc Hội","card":"LIB-2026-422","phone":"0903778678","email":"hoi@gmail.com","type":"Sinh vien","status":"Da khoa","created_at":"2026-06-09 12:05:37","updated_at":"2026-06-09 12:05:37"},
+{"id":"RD-5431","name":"Tạ Xuân Bắc","card":"LIB-2026-346","phone":"0902882781","email":"bac@gmail.com","type":"Sinh vien","status":"Hoat dong","created_at":"2026-06-09 12:05:08","updated_at":"2026-06-09 12:05:08"},
+{"id":"RD-6530","name":"Nguyễn Anh Long","card":"LIB-2026-141","phone":"0909652112","email":"long@gmail.com","type":"Sinh vien","status":"Hoat dong","created_at":"2026-06-09 12:03:33","updated_at":"2026-06-09 12:03:33"},
+{"id":"RD-7722","name":"Huỳnh Xuân Phụng","card":"LIB-2026-575","phone":"0933874081","email":"phung@gmail.com","type":"Giang vien","status":"Hoat dong","created_at":"2026-06-09 12:07:09","updated_at":"2026-06-09 12:07:09"},
+{"id":"RD-8530","name":"Phan Anh Tuấn","card":"LIB-2026-902","phone":"0906772981","email":"tuan@gmail.com","type":"Sinh vien","status":"Hoat dong","created_at":"2026-06-09 12:04:18","updated_at":"2026-06-09 12:04:18"}
+]
+}
+]

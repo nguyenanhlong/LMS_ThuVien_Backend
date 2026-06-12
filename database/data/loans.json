@@ -1,0 +1,10 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"lms_thuvien"},
+{"type":"table","name":"loans","database":"lms_thuvien","data":
+[
+{"id":"LN-2862","readerId":"RD-5431","readerName":"Tạ Xuân Bắc","date":"2026-06-09","due":"2026-06-23","status":"Đang mượn","books":"[\"BK-2531\"]","created_at":"2026-06-09 12:08:43","updated_at":"2026-06-09 12:08:43"},
+{"id":"LN-6473","readerId":"RD-6530","readerName":"Nguyễn Anh Long","date":"2026-06-09","due":"2026-06-23","status":"Đang mượn","books":"[\"BK-1459\"]","created_at":"2026-06-09 12:10:35","updated_at":"2026-06-09 12:10:35"}
+]
+}
+]
