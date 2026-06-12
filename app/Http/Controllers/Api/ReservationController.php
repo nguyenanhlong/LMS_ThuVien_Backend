@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
 use App\Models\Reservation;
+use App\Mail\ReservationConfirmedMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -25,15 +29,30 @@ class ReservationController extends Controller
             'notifyMethod' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],
             'status' => ['nullable', 'string', 'max:100'],
-            'date' => ['nullable', 'date'],
         ]);
 
         $data['id'] = $data['id'] ?? $this->makeId('RS');
         $data['status'] = $data['status'] ?? 'Chờ nhận';
-        $data['date'] = $data['date'] ?? now()->toDateTimeString();
+        $data['date'] = now()->toDateTimeString();
         $reservation = Reservation::create($data);
         $this->audit($request, 'Đặt trước sách', 'Sách: '.$reservation->bookCode.', Người đặt: '.$reservation->readerName);
 
-        return response()->json($reservation, 201);
+        $response = ['reservation' => $reservation];
+
+        if (empty($data['notifyMethod']) || $data['notifyMethod'] === 'email') {
+            $book = Book::where('code', $reservation->bookCode)->first();
+            try {
+                Mail::to($reservation->email)->send(new ReservationConfirmedMail($reservation, $book));
+                $response['email_sent'] = true;
+            } catch (\Throwable $e) {
+                Log::error('Gửi email xác nhận đặt trước thất bại: '.$e->getMessage());
+                $response['email_sent'] = false;
+                $response['email_error'] = $e->getMessage();
+            }
+        } else {
+            $response['email_sent'] = false;
+        }
+
+        return response()->json($response, 201);
     }
 }
