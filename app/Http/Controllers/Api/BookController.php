@@ -38,7 +38,7 @@ class BookController extends Controller
             $path = $request->file('cover')->store('covers', 'public');
             $data['cover'] = url('storage/' . $path);
         } else {
-            $data['cover'] = 'https://via.placeholder.com/70x100?text=Cover';
+            $data['cover'] = null;
         }
 
         $book = Book::create($data);
