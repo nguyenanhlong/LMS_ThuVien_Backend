@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -19,13 +18,17 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $data['email'])->first();
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        
+        // SỬA TẠI ĐÂY: So sánh trực tiếp chữ thuần, không dùng Hash::check nữa
+        if (!$user || $data['password'] !== $user->password) {
             throw ValidationException::withMessages([
                 'email' => ['Email hoặc mật khẩu không đúng'],
             ]);
         }
 
-        $this->audit($request, 'Đăng nhập', 'Tài khoản: '.$user->email);
+        if (method_exists($this, 'audit')) {
+            $this->audit($request, 'Đăng nhập', 'Tài khoản: '.$user->email);
+        }
 
         return response()->json([
             'id' => $user->id,
@@ -37,7 +40,9 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $this->audit($request, 'Đăng xuất', 'Người dùng đăng xuất hệ thống');
+        if (method_exists($this, 'audit')) {
+            $this->audit($request, 'Đăng xuất', 'Người dùng đăng xuất hệ thống');
+        }
         return response()->json(['message' => 'Đăng xuất thành công']);
     }
 
@@ -52,15 +57,20 @@ class AuthController extends Controller
         $email = $data['email'] ?? $request->header('X-User-Email');
         $user = $email ? User::where('email', $email)->first() : null;
 
-        if (!$user || !Hash::check($data['current'], $user->password)) {
+        // SỬA TẠI ĐÂY: So sánh trực tiếp mật khẩu hiện tại bằng chữ thuần
+        if (!$user || $data['current'] !== $user->password) {
             throw ValidationException::withMessages([
                 'current' => ['Mật khẩu hiện tại không đúng'],
             ]);
         }
 
+        // SỬA TẠI ĐÂY: Lưu thẳng mật khẩu mới dạng chữ thuần vào DB, nhập gì lưu nấy
         $user->password = $data['newPass'];
         $user->save();
-        $this->audit($request, 'Đổi mật khẩu', 'Người dùng đổi mật khẩu');
+
+        if (method_exists($this, 'audit')) {
+            $this->audit($request, 'Đổi mật khẩu', 'Người dùng đổi mật khẩu');
+        }
 
         return response()->json(['message' => 'Đổi mật khẩu thành công']);
     }
@@ -75,7 +85,10 @@ class AuthController extends Controller
 
         $user = User::where('email', $data['email'])->firstOrFail();
         $user->update(['name' => $data['name'], 'role' => $data['role'] ?? $user->role]);
-        $this->audit($request, 'Cập nhật hồ sơ', 'Thay đổi thông tin cá nhân');
+        
+        if (method_exists($this, 'audit')) {
+            $this->audit($request, 'Cập nhật hồ sơ', 'Thay đổi thông tin cá nhân');
+        }
 
         return response()->json([
             'id' => $user->id,

@@ -1,13 +1,31 @@
 /vendor
 /node_modules
+
 /public/storage
 /storage/*.key
+
 .env
 .env.backup
+
 .phpunit.result.cache
+
 Homestead.json
 Homestead.yaml
+
 npm-debug.log
 yarn-error.log
+
 /.idea
 /.vscode
+
+# Laravel cache & logs
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Bootstrap cache
+/bootstrap/cache/*.php
+
+# SQLite local database
+/database/database.sqlite
