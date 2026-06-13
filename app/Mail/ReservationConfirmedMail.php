@@ -26,7 +26,7 @@ class ReservationConfirmedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Xác nhận đặt trước sách',
+            subject: 'Xác nhận đặt trước sách - LMS ThuVien',
         );
     }
 

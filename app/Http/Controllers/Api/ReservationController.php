@@ -37,7 +37,10 @@ class ReservationController extends Controller
         $reservation = Reservation::create($data);
         $this->audit($request, 'Đặt trước sách', 'Sách: '.$reservation->bookCode.', Người đặt: '.$reservation->readerName);
 
-        $response = ['reservation' => $reservation];
+        $response = [
+            'message' => 'Đặt trước thành công',
+            'reservation' => $reservation,
+        ];
 
         if (empty($data['notifyMethod']) || $data['notifyMethod'] === 'email') {
             $book = Book::where('code', $reservation->bookCode)->first();
@@ -45,9 +48,17 @@ class ReservationController extends Controller
                 Mail::to($reservation->email)->send(new ReservationConfirmedMail($reservation, $book));
                 $response['email_sent'] = true;
             } catch (\Throwable $e) {
-                Log::error('Gửi email xác nhận đặt trước thất bại: '.$e->getMessage());
+                Log::error('Gửi email xác nhận đặt trước thất bại', [
+                    'reservation_id' => $reservation->id,
+                    'email' => $reservation->email,
+                    'error' => $e->getMessage(),
+                ]);
                 $response['email_sent'] = false;
-                $response['email_error'] = $e->getMessage();
+                if (app()->environment('local', 'testing', 'development')) {
+                    $response['email_error'] = $e->getMessage();
+                } else {
+                    $response['email_error'] = 'Không thể gửi email xác nhận. Vui lòng thử lại sau.';
+                }
             }
         } else {
             $response['email_sent'] = false;
