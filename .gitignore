@@ -23,6 +23,7 @@ yarn-error.log
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
+/storage/app/public/covers/*
 
 # Bootstrap cache
 /bootstrap/cache/*.php
